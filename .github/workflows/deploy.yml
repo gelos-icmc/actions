@@ -27,11 +27,11 @@ jobs:
         echo "url=$url" >> "$GITHUB_OUTPUT" || \
         true
       env:
-        GITHUB_TOKEN: ${{ secrets.token }}
+        GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
     - name: Sinalizar update
       uses: benc-uk/workflow-dispatch@798e70c97009500150087d30d9f11c5444830385
       with:
         workflow: bump-lock.yml
         repo: gelos-icmc/infra
         inputs: '{ "name": "gelos-${{ github.event.repository.name }}", "ref": "github:${{ github.repository }}/${{ github.sha }}", "context": "${{ steps.get_pr.outputs.url }}" }'
-        token: ${{ secrets.token }}
+        token: ${{ steps.generate-token.outputs.token }}
