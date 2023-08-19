@@ -1,0 +1,37 @@
+# Essa action permite que um projeto do GELOS atualize o seu flake
+# correspondente no repo de infra.
+#
+# Ela triggereia a action bump-lock, que gera um commit de bump, que por sua
+# vez triggereia um deploy.
+#
+# Caso essa action seja ativada por um commit que veio de PR, esse PR é linkado
+# no texto da mensagem do commit de bump (permitindo ao contribuidor ver o
+# andamento do deploy)
+#
+on:
+  workflow_call:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Autenticar bot
+      uses: tibdex/github-app-token@v1
+      id: generate-token
+      with:
+        app_id: 251209
+        private_key: ${{ secrets.GELOS_BOT_KEY }}
+    - name: Obter URL do PR
+      id: get_pr
+      run: |
+        url="$(gh api repos/${{ github.repository }}/commits/${{ github.sha }}/pulls | jq '.[0].html_url' -re)" && \
+        echo "url=$url" >> "$GITHUB_OUTPUT" || \
+        true
+      env:
+        GITHUB_TOKEN: ${{ secrets.token }}
+    - name: Sinalizar update
+      uses: benc-uk/workflow-dispatch@798e70c97009500150087d30d9f11c5444830385
+      with:
+        workflow: bump-lock.yml
+        repo: gelos-icmc/infra
+        inputs: '{ "name": "gelos-${{ github.event.repository.name }}", "ref": "github:${{ github.repository }}/${{ github.sha }}", "context": "${{ steps.get_pr.outputs.url }}" }'
+        token: ${{ secrets.token }}
