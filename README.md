@@ -20,7 +20,7 @@ on:
     branches: [main]
 jobs:
   deploy:
-    uses: gelos-icmc/actions/.github/workflows/deploy.yml
+    uses: gelos-icmc/actions/.github/workflows/deploy.yml@main
     secrets: inherit
 ```
 
