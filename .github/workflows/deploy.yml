@@ -13,13 +13,16 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      app_key: ${{ secrets.GELOS_BOT_KEY }}
+    if: ${{ env.app_key != '' }}
     steps:
     - name: Autenticar bot
       uses: tibdex/github-app-token@v1
       id: generate-token
       with:
         app_id: 251209
-        private_key: ${{ secrets.GELOS_BOT_KEY }}
+        private_key: ${{ env.app_key }}
     - name: Obter URL do PR
       id: get_pr
       run: |
