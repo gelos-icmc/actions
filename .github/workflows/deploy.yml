@@ -13,15 +13,24 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    if: ${{ secrets.GELOS_BOT_KEY != '' }}
     steps:
+    - name: Checar secret
+      id: secret-check
+      run: |
+        if [ "${{ secrets.GELOS_BOT_KEY }}" != '' ]; then
+          echo "available=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "available=false" >> "$GITHUB_OUTPUT"
+        fi
     - name: Autenticar bot
+      if: ${{ steps.secret-check.outputs.available == 'true' }}
       uses: tibdex/github-app-token@v1
       id: generate-token
       with:
         app_id: 251209
         private_key: ${{ secrets.GELOS_BOT_KEY }}
     - name: Obter URL do PR
+      if: ${{ steps.secret-check.outputs.available == 'true' }}
       id: get_pr
       run: |
         url="$(gh api repos/${{ github.repository }}/commits/${{ github.sha }}/pulls | jq '.[0].html_url' -re)" && \
@@ -30,6 +39,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
     - name: Sinalizar update
+      if: ${{ steps.secret-check.outputs.available == 'true' }}
       uses: benc-uk/workflow-dispatch@798e70c97009500150087d30d9f11c5444830385
       with:
         workflow: bump-lock.yml
