@@ -18,15 +18,12 @@ on:
 jobs:
   fix:
     runs-on: ubuntu-latest
-    env:
-      app_key: ${{ secrets.GELOS_BOT_KEY }}
-    if: ${{ env.app_key != '' }}
     steps:
     - uses: tibdex/github-app-token@v1
       id: generate-token
       with:
         app_id: 251209
-        private_key: ${{ env.app_key }}
+        private_key: ${{ secrets.GELOS_BOT_KEY }}
     - name: git config
       run: |
         git config --global user.name "gelos-bot"
