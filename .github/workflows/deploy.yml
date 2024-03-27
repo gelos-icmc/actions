@@ -44,5 +44,5 @@ jobs:
       with:
         workflow: bump-lock.yml
         repo: gelos-icmc/infra
-        inputs: '{ "name": "gelos-${{ github.event.repository.name }}", "ref": "github:${{ github.repository }}/${{ github.sha }}", "context": "${{ steps.get_pr.outputs.url }}" }'
+        inputs: '{ "name": "gelos-${{ github.event.repository.name }}", "ref": "github:${{ github.repository }}/${{ github.sha }}", "context": "${{ github.repository }}@${{ github.sha }} ${{ steps.get_pr.outputs.url }}" }'
         token: ${{ steps.generate-token.outputs.token }}
